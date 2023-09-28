@@ -1,8 +1,8 @@
 
 import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
-import { Menu } from '@mui/icons-material';
+import { Menu,  } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-
+import logo from "../assets/logo.png"
 const Header = styled(AppBar)`
   z-index: 1201;
   background: #fff;
@@ -13,12 +13,13 @@ const Header = styled(AppBar)`
 const Heading = styled(Typography)`
   color: #5F6368;
   font-size: 24px;
-  margin-left: 25px;
+  margin: auto;
+
 `
 
 
 const HeaderBar = ({ open, handleDrawer }) => {
-  const logo = 'https://seeklogo.com/images/G/google-keep-logo-0BC92EBBBD-seeklogo.com.png';
+  const logo1 = logo;
   
   return (
     <Header open={open}>
@@ -29,9 +30,12 @@ const HeaderBar = ({ open, handleDrawer }) => {
           edge="start"
         >
           <Menu />
-        </IconButton>
-        <img src={logo} alt="logo" style={{width: 30}} />
-        <Heading>Keep</Heading>
+        </IconButton><div style={{display:"flex",margin:"auto"}}>
+        <img src={logo1} alt="logo" style={{width: 50, alignItems:"center",justifyContent:"center"}} />
+        <Heading>NotesApp</Heading>
+        </div>
+        
+        
       </Toolbar>
     </Header>
   )

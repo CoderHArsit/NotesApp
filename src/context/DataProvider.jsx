@@ -7,6 +7,7 @@ const DataProvider = ({ children }) => {
     const [notes, setNotes] = useState([]);
     const [archiveNotes, setAcrchiveNotes] = useState([]);
     const [deleteNotes, setDeleteNotes] = useState([]);
+    const [pinnedNotes,setPinnedNotes]=useState([]);
 
     return (
         <DataContext.Provider value={{
@@ -15,7 +16,9 @@ const DataProvider = ({ children }) => {
             archiveNotes,
             setAcrchiveNotes,
             deleteNotes,
-            setDeleteNotes
+            setDeleteNotes,
+            pinnedNotes,
+            setPinnedNotes,
         }}
         >
             {children}
