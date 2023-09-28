@@ -43,10 +43,10 @@ const Form = () => {
     const [addPinNote, setAddPinNote] = useState({ ...note, id: uuid() });
 
     // const { setNotes } = useContext(DataContext);
-    const { setPinnedNotes }=useContext(DataContext);
+    // const { setPinnedNotes }=useContext(DataContext);
     const containerRef = useRef();
     const noteRef=collection(db,"note");
-
+    const pinRef=collection(db,"pin");
     useEffect(()=>{
         const getNotes=async()=>{
             const data=await getDocs(noteRef);
@@ -55,10 +55,10 @@ const Form = () => {
         }
         getNotes();
     },[noteRef])
-    const Alert = React.forwardRef(function Alert(props, ref) {
-        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-      });
-      const [open, setOpen] = React.useState(false);
+    // const Alert = React.forwardRef(function Alert(props, ref) {
+    //     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    //   });
+    //   const [open, setOpen] = React.useState(false);
       
     const handleClickAway = async(e) => {
         setShowTextField(false);
@@ -67,31 +67,19 @@ const Form = () => {
 
         if (addNote.title || addNote.text) {
             await addDoc(noteRef,addNote);
-            setOpen(true);
-            <Snackbar open={open} autoHideDuration={6000} >
-            <Alert  severity="success" sx={{ width: '100%' }}>
-             This is a success message!
-            </Alert>
-            </Snackbar>
         }
     }
-    // const handleClose = (event, reason) => {
-    //     if (reason === 'clickaway') {
-    //       return;
-    //     }
-    
-    //     setOpen(false);
-    //   };
-    const handlepin = (note) => {
+    const handlepin = async(e) => {
         setShowTextField(false);
         containerRef.current.style.minheight = '30px'
-        setAddPinNote({ ...note, id: uuid() });
+        setAddNote({ ...note, id: uuid() });
 
-        if (addPinNote.heading || addPinNote.text) {
-            setPinnedNotes(prevArr => [addPinNote, ...prevArr])
+        if (addNote.title || addNote.text) {
+            await addDoc(pinRef,addNote);
         }
     }
-    
+   
+ 
     const onTextAreaClick = () => {
         setShowTextField(true);
         containerRef.current.style.minheight = '70px'
@@ -140,7 +128,7 @@ const Form = () => {
                     name='text'
                     value={addNote.text}
                 />
-                 <a href='#' >  <SellOutlinedIcon/></a>
+                 <a href='#' onClick={handlepin}>  <SellOutlinedIcon/></a>
                 
             </Container>
         </ClickAwayListener>

@@ -14,7 +14,7 @@ import Snackbar from '@mui/material/Snackbar';
 import {collection,deleteDoc,doc,getDocs} from "firebase/firestore";
 import { db } from '../firebase-config';
 // import {collection,getDocs} from "firebase/firestore";
-
+import PinNote from './PinNote';
 //components
 import Form from './Form';
 import Note from './Note';
@@ -27,8 +27,10 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 const Notes = () => {
 
     const [ notes, setNotes ] = useState([]);
+    const [pin,setPin]=useState([]);
+    const pinRef=collection(db,"pin");
     const noteRef=collection(db,"note");
-
+     
     useEffect(()=>{
         const getNotes=async()=>{
             const data=await getDocs(noteRef);
@@ -37,6 +39,14 @@ const Notes = () => {
         }
         getNotes();
     },[noteRef])
+    useEffect(()=>{
+        const getNotes=async()=>{
+            const data=await getDocs(pinRef);
+            console.log(data);
+            setPin(data.docs.map((docs)=>({...docs.data(),id: docs.id})))
+        }
+        getNotes();
+    },[pinRef])
     // const [pinnedNotes,setPinnedNotes]=useContext(DataContext);
     // const [deleteNotes, setDeleteNotes] = useContext(DataContext);
     const onDragEnd = (result) => {
@@ -85,41 +95,75 @@ const Notes = () => {
             <Box sx={{ p: 3, width: '100%' }}>
                 <DrawerHeader />
                 <Form />
-                 <div >
-               { notes.length!==0 ? 
-                    <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable droppableId="droppable">
-                            {(provided, snapshot) => (
-                                <Grid container style={{ marginTop: 16 ,justifyContent: "center"}}
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}
-                                >
+                <div>
+                    {
+                        pin.length!==0 ?
+                        <Grid container style={{ marginTop: 16 , display:"flex",flexDirection:"column",justifyContent:"center"}}
+                      >  <h3>Pinned Notes</h3>
+                                    
+                                
                                 {
 
-                                  records && records.map((note) => (
-                                        <Draggable key={note.id} draggableId={note.id} >
-                                            {(provided, snapshot) => (
+                                  pin && pin.map((pin) => (
+                                    
+                                            
                                                 
-                                                <Grid className="animate__animated animate__bounce" ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                    item
+                                                <Grid className="animate__animated animate__bounce" 
+                                                    
                                                 >
-                                                    <Note note={note} id={note.id}  />
+                                                    <PinNote note={pin} id={pin.id}  />
 
                                                 </Grid>
                                           
-                                            )}
-                                        </Draggable >
+                                            
+                                    
                                     ))
                                 }
                                 </Grid>
-                            )}
-                        </Droppable >
-                    </DragDropContext>
-                : <EmptyNotes /> }
+                         : " "
+                    }
                 </div>
-            </Box><div style={{margin:"auto"}}>
+
+                 <div >
+               { notes.length===0  && pin.length===0? 
+                   
+                 <EmptyNotes /> :
+                 <DragDropContext onDragEnd={onDragEnd}>
+                 <Droppable droppableId="droppable">
+                     {(provided, snapshot) => (
+                         <Grid container style={{ marginTop: 16 ,justifyContent: "center"}}
+                             {...provided.droppableProps}
+                             ref={provided.innerRef}
+                         >
+                         {
+
+                           records && records.map((note) => (
+                                 <Draggable key={note.id} draggableId={note.id} >
+                                     {(provided, snapshot) => (
+                                         
+                                         <Grid className="animate__animated animate__bounce" ref={provided.innerRef}
+                                             {...provided.draggableProps}
+                                             {...provided.dragHandleProps}
+                                             item
+                                         >
+                                             <Note note={note} id={note.id}  />
+
+                                         </Grid>
+                                   
+                                     )}
+                                 </Draggable >
+                             ))
+                         }
+                         </Grid>
+                     )}
+                 </Droppable >
+             </DragDropContext>
+             }
+                </div>
+
+                
+            </Box><div style={{margin:"auto"}}>{
+                notes.length===0  && pin.length===0?" ":
             <nav style={{display:"flex",justifyContent:"center"}}>
             <ul className='pagination'>
                 <li className='page-item'>
@@ -139,7 +183,9 @@ const Notes = () => {
                 </li>
 
             </ul>
+            
             </nav>
+}
             </div>
            
         </Box>

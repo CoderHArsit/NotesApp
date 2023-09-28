@@ -10,8 +10,6 @@ import {collection,deleteDoc,doc,getDocs} from "firebase/firestore";
 import { db } from '../firebase-config';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import { useState ,useEffect} from 'react';
-import { addDoc } from 'firebase/firestore';
-import { v4 as uuid } from 'uuid';
 
 const StyledCard = styled(Card)`
     border: 1px solid #e0e0e0;
@@ -23,21 +21,13 @@ const StyledCard = styled(Card)`
 `
 
 
-const Note = ({ note }) => {
+const PinNote = ({ note }) => {
 
     const { setAcrchiveNotes, setDeleteNotes,setPinnedNotes } = useContext(DataContext);
     const [ notes, setNotes ] = useState([]);
-    const [addNote, setAddNote] = useState({title:"",tagline:"",text:""});
-    const noteRef=collection(db,"note");
+    const [pin,setPin]=useState([]);
     const pinRef=collection(db,"pin");
-    useEffect(()=>{
-        const getNotes=async()=>{
-            const data=await getDocs(noteRef);
-            console.log(data);
-            setNotes(data.docs.map((docs)=>({...docs.data(),id: docs.id})))
-        }
-        getNotes();
-    },[noteRef])
+    
     useEffect(()=>{
         const getNotes=async()=>{
             const data=await getDocs(pinRef);
@@ -51,16 +41,10 @@ const Note = ({ note }) => {
         setNotes(updatedNotes);
         setAcrchiveNotes(prevArr => [note, ...prevArr]);
     }
-    const pinnedNotes = async(e) => {
-        setAddNote({ ...note, id: uuid() });
-
-        if (addNote.title || addNote.text) {
-            await addDoc(pinRef,addNote);
-            const deletenote=doc(noteRef,e.id)
-        
-            await deleteDoc(deletenote);
-        }
-
+    const pinnedNotes = (note) => {
+        const updatedNotes = notes.filter(data => data.id !== note.id);
+        setNotes(updatedNotes);
+        setPinnedNotes(prevArr => [note, ...prevArr]);
     }
 
     // const deleteNote = (note) => {
@@ -72,7 +56,7 @@ const Note = ({ note }) => {
     // }
 
     const deleteNote=async(id)=>{
-        const deletenote=doc(noteRef,id)
+        const deletenote=doc(pinRef,id)
         
         await deleteDoc(deletenote);
     }
@@ -95,13 +79,13 @@ const Note = ({ note }) => {
                         fontSize="small"
                         onClick={() => deleteNote(note.id)}
                     />
-                      <SellOutlinedIcon
+                      {/* <SellOutlinedIcon
                         fontSize="small"
                         onClick={() => pinnedNotes(note)}
-                    />
+                    /> */}
                 </CardActions>
         </StyledCard>
     )
 }
 
-export default Note;
+export default PinNote;
