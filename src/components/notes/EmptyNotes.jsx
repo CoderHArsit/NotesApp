@@ -25,7 +25,7 @@ const EmptyNotes = () => {
     return (
         <Container>
             <img className='animate__animated animate__bounce' src={drawing} alt="error"  style={{width:300,height:300}}/>
-            <Text>Add your notes here and drag them priority wise</Text>
+            <Text>Your notes gonna appear here once you enter the text above and click outside the box.</Text>
         </Container>
     )
 }

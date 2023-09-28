@@ -1,0 +1,31 @@
+ <DragDropContext onDragEnd={onDragEnd}>
+                 <Droppable droppableId="droppable">
+                     {(provided, snapshot) => (
+                         <Grid container style={{ marginTop: 16 ,justifyContent: "center"}}
+                             {...provided.droppableProps}
+                             ref={provided.innerRef}
+                         >
+                          <div style={{display:"flex",justifyContent:"center"}}>   {
+                           records && records.map((note) => (
+                                 <Draggable key={note.id} draggableId={note.id} >
+                                     {(provided, snapshot) => (
+                                         
+                                         <Grid className="animate__animated animate__bounce" ref={provided.innerRef}
+                                             {...provided.draggableProps}
+                                             {...provided.dragHandleProps}
+                                             item
+                                             style={{margin:"auto"}}
+                                         >
+                                             <Note note={note} id={note.id}  />
+
+                                         </Grid>
+                                   
+                                     )}
+                                 </Draggable >
+                             ))
+                         }
+                         </div>
+                         </Grid>
+                     )}
+                 </Droppable >
+             </DragDropContext>
