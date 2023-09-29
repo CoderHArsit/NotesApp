@@ -12,6 +12,8 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import { useState ,useEffect,useRef,useContext} from 'react';
 import { addDoc } from 'firebase/firestore';
 import { v4 as uuid } from 'uuid';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 const StyledCard = styled(Card)`
     border: 1px solid #e0e0e0;
     border-radius: 8px;
@@ -20,6 +22,9 @@ const StyledCard = styled(Card)`
     
     box-shadow: none;
 `
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
 
 const PinNote = ({ note }) => {
@@ -65,6 +70,7 @@ const PinNote = ({ note }) => {
     //     setPinnedNotes(prevArr => [note, ...prevArr]);
     // }
     const [open, setOpen] = React.useState(false);
+    const [open1, setOpen1] = React.useState(false);
     const handleedit = (note) =>{ setOpen(true);
      console.log(note.id);
      setAddNote({title:note.title,tagline:note.tagline,text:note.text})
@@ -75,7 +81,10 @@ const PinNote = ({ note }) => {
         const updatenote = doc(db,"pin",note.id)
         await updateDoc(updatenote,addNote)
         setOpen(false);
+        setOpen1(true);
+
     }
+    const handleClose1 = () => setOpen1(false);
 
     // const deleteNote = (note) => {
     //     // const updatedNotes = notes.filter(data => data.id !== note.id);
@@ -179,6 +188,11 @@ const containerRef = useRef();
                         onClick={() => pinnedNotes(note)}
                     /> */}
                 </CardActions>
+                <Snackbar open={open1} autoHideDuration={6000} onClose={handleClose1}>
+        <Alert onClose={handleClose1} severity="success" sx={{ width: '100%' }}>
+          Updated successfully
+        </Alert>
+      </Snackbar>
         </StyledCard>
     )
 }

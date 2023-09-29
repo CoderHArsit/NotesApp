@@ -102,13 +102,38 @@ const Notes = () => {
                       >  <h4>Pinned Notes</h4>
                                  <div style={{display:"flex",justifyContent:"center"}}>   
                                 {
-                                  pin && pin.map((pin) => (
-                                            <div >
-                                                <Grid className="animate__animated animate__bounce" 
-                                                    style={{margin:'auto'}}>
-                                                    <PinNote note={pin} id={pin.id}  />
-                                                </Grid>
-                                                </div> ))
+                          
+
+<DragDropContext onDragEnd={onDragEnd}>
+<Droppable droppableId="droppable">
+    {(provided, snapshot) => (
+        <Grid container style={{ marginTop: 16 ,justifyContent: "center"}}
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+        >
+        {
+
+          pin && pin.map((pin) => (
+                <Draggable key={pin.id} draggableId={pin.id} >
+                    {(provided, snapshot) => (
+                        
+                        <Grid className="animate__animated animate__bounce" ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            item
+                        >
+                            <PinNote note={pin} id={pin.id}  />
+
+                        </Grid>
+                  
+                    )}
+                </Draggable >
+            ))
+        }
+        </Grid>
+    )}
+</Droppable >
+</DragDropContext>
                                 }  </div>
                                 </Grid>
                          : " "
@@ -116,22 +141,39 @@ const Notes = () => {
                 </div>
 <hr/>
                  <div >
-               { notes.length===0  && pin.length===0?  
+               { notes.length===0  && pin.length===0? 
+                   
                  <EmptyNotes /> :
-                  <Grid container style={{ marginTop: 16 , display:"flex",flexDirection:"column",justifyContent:"center"}}
-                      >  <h4>Pinned Notes</h4>
-                                 <div style={{display:"flex",justifyContent:"center"}}>   
-                                {
-                                  records && records.map((note) => (
-                                            <div >
-                                                <Grid className="animate__animated animate__bounce" 
-                                                    style={{margin:'auto'}}>
-                                                    <Note note={note} id={note.id}  />
-                                                </Grid>
-                                                </div> ))
-                                }  </div>
-                                </Grid>
-                
+                 <DragDropContext onDragEnd={onDragEnd}>
+                 <Droppable droppableId="droppable">
+                     {(provided, snapshot) => (
+                         <Grid container style={{ marginTop: 16 ,justifyContent: "center"}}
+                             {...provided.droppableProps}
+                             ref={provided.innerRef}
+                         >
+                         {
+
+                           records && records.map((note) => (
+                                 <Draggable key={note.id} draggableId={note.id} >
+                                     {(provided, snapshot) => (
+                                         
+                                         <Grid className="animate__animated animate__bounce" ref={provided.innerRef}
+                                             {...provided.draggableProps}
+                                             {...provided.dragHandleProps}
+                                             item
+                                         >
+                                             <Note note={note} id={note.id}  />
+
+                                         </Grid>
+                                   
+                                     )}
+                                 </Draggable >
+                             ))
+                         }
+                         </Grid>
+                     )}
+                 </Droppable >
+             </DragDropContext>
              }
                 </div>
 

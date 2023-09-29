@@ -3,7 +3,7 @@ import {Box, ClickAwayListener,TextField} from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { Card, CardContent, CardActions, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import {  DeleteOutlineOutlined as Delete } from '@mui/icons-material';
+import {  DeleteOutlineOutlined as Delete, TurnLeftTwoTone } from '@mui/icons-material';
 // import SellIcon from '@mui/icons-material/Sell';
 import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
 import {collection,deleteDoc,doc,getDocs, updateDoc} from "firebase/firestore";
@@ -12,6 +12,9 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import { useState ,useEffect,useRef} from 'react';
 import { addDoc } from 'firebase/firestore';
 import { v4 as uuid } from 'uuid';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
 
 
 
@@ -35,6 +38,9 @@ const style = {
     boxShadow: 24,
     p: 4,
   };
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
 const Note = ({ note }) => {
 
@@ -91,9 +97,22 @@ const containerRef = useRef();
         getNotes();
     },[pinRef])
     const onTextChange = (e) => {
-        let changedNote = { ...addNote, [e.target.name]: e.target.value };
-        setAddNote(changedNote);
+         const name=e.target.name;
+         const value=e.target.value;
+        setAddNote({...addNote,[name]:value});
     }
+    const [open1, setOpen1] = React.useState(false);
+
+    const [open2, setOpen2] = React.useState(false);
+  
+    const handleClose1 = (event, reason) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+  
+      setOpen1(false);
+    };
+  
     const handlepin = async(e) => {
         setShowTextField(false);
         containerRef.current.style.minheight = '30px'
@@ -118,6 +137,7 @@ const containerRef = useRef();
         const updatenote = doc(db,"note",note.id)
         await updateDoc(updatenote,addNote)
         setOpen(false);
+        setOpen1(true);
     }
     const pinnedNotes = async(e) => {
         setAddNote({ ...note, id: uuid() });
@@ -143,9 +163,13 @@ const containerRef = useRef();
         const deletenote=doc(noteRef,id)
         
         await deleteDoc(deletenote);
+        setOpen2(true);
+
     }
+    const handleClose2=()=> {setOpen2(false)};
     return (
         <StyledCard>
+             
                 <CardContent>
                     <Typography style={{fontSize:"20px",font:"bold"}}>{note.title}</Typography>
                     <Typography style={{color:"#ab9d9d"}}>{note.tagline}</Typography>
@@ -166,8 +190,9 @@ const containerRef = useRef();
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+    
       ><Box sx={style}>
-       <ClickAwayListener onClickAway={handleClickAway}>
+   
             <Container ref={containerRef}>
            
                     <TextField 
@@ -175,7 +200,7 @@ const containerRef = useRef();
                         variant="standard"
                         InputProps={{ disableUnderline: true }}
                         style={{ marginBottom: 10 }}
-                        onChange={(e) => onTextChange(e)}
+                        onChange={onTextChange}
                         name='title'
                         value={addNote.title}
                     />
@@ -186,7 +211,7 @@ const containerRef = useRef();
                         variant="standard"
                         InputProps={{ disableUnderline: true }}
                         style={{ marginBottom: 10 }}
-                        onChange={(e) => onTextChange(e)}
+                        onChange={onTextChange}
                         name='tagline'
                         value={addNote.tagline}
                     />
@@ -199,16 +224,17 @@ const containerRef = useRef();
                     variant="standard"
                     InputProps={{ disableUnderline: true }}
                     
-                    onChange={(e) => onTextChange(e)}
+                    onChange={onTextChange}
                     name='text'
                     value={addNote.text}
                 />
                 <div style={{display:"flex"}}>
                  <a href='#' onClick={handlepin}>  <SellOutlinedIcon/></a>
                 <a> <button style={{margin:"0px 10px",border:"1px solid blue",background:"#6499E9",fontWeight:"12px",borderRadius:"20px",font:"#12486B"}} onClick={()=>updatedNote(note)}>Update</button></a>
+               
                  </div>
             </Container>
-        </ClickAwayListener>
+        
         </Box>
       </Modal>
 
@@ -221,6 +247,12 @@ const containerRef = useRef();
                         onClick={() => pinnedNotes(note)}
                     />
                 </CardActions>
+                <Snackbar open={open1} autoHideDuration={6000} onClose={handleClose1}>
+        <Alert onClose={handleClose1} severity="success" sx={{ width: '100%' }}>
+          Updated successfully
+        </Alert>
+      </Snackbar>
+    
         </StyledCard>
     )
 }

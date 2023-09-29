@@ -23,6 +23,9 @@ const Container = styled(Box)`
     min-height: 30px;
     padding: 10px 15px;
 `
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
 const note = {
     id: '',
@@ -59,7 +62,7 @@ const Form = () => {
     //     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
     //   });
     //   const [open, setOpen] = React.useState(false);
-      
+    const [open, setOpen] = React.useState(false);
     const handleClickAway = async(e) => {
         setShowTextField(false);
         containerRef.current.style.minheight = '30px'
@@ -67,8 +70,11 @@ const Form = () => {
 
         if (addNote.title || addNote.text) {
             await addDoc(noteRef,addNote);
+            setOpen(true);
         }
     }
+    const handleClose = () => setOpen(false);
+
     const handlepin = async(e) => {
         setShowTextField(false);
         containerRef.current.style.minheight = '30px'
@@ -79,7 +85,8 @@ const Form = () => {
         }
     }
    
- 
+  
+
     const onTextAreaClick = () => {
         setShowTextField(true);
         containerRef.current.style.minheight = '70px'
@@ -91,8 +98,15 @@ const Form = () => {
     }
 
     return (
+        
         <ClickAwayListener onClickAway={handleClickAway}>
+        
             <Container ref={containerRef}>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          Note created
+        </Alert>
+      </Snackbar>
                 {   showTextField && 
                     <TextField 
                         placeholder="Title"
@@ -131,6 +145,7 @@ const Form = () => {
                  <a href='#' onClick={handlepin}>  <SellOutlinedIcon/></a>
                 
             </Container>
+
         </ClickAwayListener>
     )
 }
